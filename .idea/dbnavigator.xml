@@ -141,7 +141,9 @@ select * from worker, jobmaker;]]></console>
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="public.flight" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.company" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.unit_test" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.worker" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.employee" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.jobmaker" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />

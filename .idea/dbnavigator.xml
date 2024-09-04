@@ -117,7 +117,42 @@ left join jobmaker j on e.company_id = j.id
 left join employee_conyact ec on ec.employee_id = e.id
 left join contacts c on c.id = ec.contact_id;
 
-select * from worker, jobmaker;]]></console>
+select * from worker, jobmaker;
+
+create table airport(
+code char(3) unique not null primary key,
+country varchar(256) not null,
+city varchar(128) not null
+);
+create table aicraft(
+id serial primary key,
+model varchar(256) not null,
+image bytea
+);
+create table flight(
+id bigserial primary key,
+flight_no varchar(16) not null,
+departure_date timestamp,
+departure_airport_code char(3) references airport(code),
+arrival_date timestamp,
+arrival_airoport_code char(3) references airport(code),
+aircraft_id integer references aicraft(id),
+status varchar(32)
+);
+drop table seat;
+create table seat(
+aircraft_id integer not null references aicraft(id),
+seat_no varchar(4)  not null primary key
+);
+drop table ticket;
+create table ticket(
+id bigserial primary key,
+passenger_no varchar(32),
+passenger_name varchar(128),
+flight_id bigint references flight(id),
+seat_no varchar(4),
+cost numeric(8,2)
+);]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">

@@ -28,7 +28,7 @@ public class App
         String sql4 = """
                 select * from test.company;
                 """;
-        try(Connection connection = ConnectionManager.open();
+        try(Connection connection = ConnectionManager.get();
         var statement = connection.createStatement()) {
 //            System.out.println(statement.execute(sql));
 //            System.out.println(statement.execute(sql1));
@@ -36,9 +36,9 @@ public class App
 //            System.out.println(statement.executeUpdate(sql3));
             var set = statement.executeQuery(sql4);
             while (set.next()){
-                System.out.println(set.getLong("id"));
+//                System.out.println(set.getLong("id"));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | InterruptedException e) {
             throw new RuntimeException(e);
         }
         System.out.println(getWorkersByCompany(1L));
@@ -51,15 +51,15 @@ public class App
                 where j.id = ?
                 """;
 
-        try(Connection connection = ConnectionManager.open();
+        try(Connection connection = ConnectionManager.get();
             var statement = connection.prepareStatement(sql)) {
             statement.setLong(1, ask);
             var res = statement.executeQuery();
             while (res.next()){
                 arr.add(res.getLong("id"));
-            }
+            };
             return arr;
-        } catch (SQLException e) {
+        } catch (SQLException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

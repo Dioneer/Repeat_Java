@@ -4,21 +4,20 @@ import Pegas.entity.Ticket;
 import Pegas.exception.DaoException;
 import Pegas.utils.ConnectionManager;
 
-import java.math.BigDecimal;
 import java.sql.*;
 
 public class TicketDao {
-    private static volatile TicketDao INSTANCE;
+    private static volatile TicketDao INSTANCE = new TicketDao();
     private TicketDao(){};
 
     private final static String sql = """
-            insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost))values (?,?,?,?,?);
+            insert into test.ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values (?,?,?,?,?);
             """;
     private final static String sql2 = """
-            delete from ticker where id = ?;
+            delete from test.ticket where id = ?;
             """;
 
-    public TicketDao getINSTANCE(){
+    public static TicketDao getINSTANCE(){
         if (INSTANCE==null){
             synchronized (TicketDao.class){
                 if (INSTANCE==null){
@@ -32,11 +31,11 @@ public class TicketDao {
     public Ticket save(Ticket ticket) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(2, ticket.getPassengerNo());
-            statement.setString(3, ticket.getPassengerName());
-            statement.setLong(4, ticket.getFlightId());
-            statement.setString(5, ticket.getSeatNo());
-            statement.setBigDecimal(6, ticket.getCost());
+            statement.setString(1, ticket.getPassengerNo());
+            statement.setString(2, ticket.getPassengerName());
+            statement.setLong(3, ticket.getFlightId());
+            statement.setString(4, ticket.getSeatNo());
+            statement.setBigDecimal(5, ticket.getCost());
             statement.executeUpdate();
             ResultSet res = statement.getGeneratedKeys();
             if(res.next()){

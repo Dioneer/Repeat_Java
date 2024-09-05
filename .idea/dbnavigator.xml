@@ -124,11 +124,15 @@ code char(3) unique not null primary key,
 country varchar(256) not null,
 city varchar(128) not null
 );
+insert into airport (code, country, city) values ('QWE', 'Russia','Moscow');
+
 create table aicraft(
 id serial primary key,
 model varchar(256) not null,
 image bytea
 );
+insert into aicraft (model) values ('Boing');
+
 create table flight(
 id bigserial primary key,
 flight_no varchar(16) not null,
@@ -139,12 +143,18 @@ arrival_airoport_code char(3) references airport(code),
 aircraft_id integer references aicraft(id),
 status varchar(32)
 );
+
+insert into flight (flight_no, departure_date, departure_airport_code,arrival_airoport_code,
+ aircraft_id) values ('1a', now(), 'QWE', 'QWE', 1);
+
 drop table seat;
+
 create table seat(
 aircraft_id integer not null references aicraft(id),
 seat_no varchar(4)  not null primary key
 );
 drop table ticket;
+
 create table ticket(
 id bigserial primary key,
 passenger_no varchar(32),
@@ -152,32 +162,38 @@ passenger_name varchar(128),
 flight_id bigint references flight(id),
 seat_no varchar(4),
 cost numeric(8,2)
-);]]></console>
+);
+
+insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values ('ads', 'asdasd',1, '1q',10.0);]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" object-ref="schemas/test/tables/ticket" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="f9d730d3-453a-4241-80a2-d3aef01a1796" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="public.users" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.employee_contact" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="public.company" active-filter-id="5547392d-4b15-427d-bc69-f15eea849b46">
       <filter id="5547392d-4b15-427d-bc69-f15eea849b46" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="id" operator="=" value="" active="true" />
       </filter>
     </filter-actions>
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.contact" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.employee" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.ticket" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.employee_contact" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="public.flight" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.company" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.unit_test" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.worker" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.employee" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.flight" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" dataset="test.jobmaker" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">

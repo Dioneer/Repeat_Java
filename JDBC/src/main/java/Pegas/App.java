@@ -42,6 +42,7 @@ public class App
             throw new RuntimeException(e);
         }
         System.out.println(getWorkersByCompany(1L));
+
     }
     public static List<Long> getWorkersByCompany(Long ask){
         List<Long> arr = new ArrayList<>();

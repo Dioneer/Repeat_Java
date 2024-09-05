@@ -1,6 +1,8 @@
 package Pegas.DAO;
 
 import Pegas.DTO.TickerFilter;
+import Pegas.entity.Flight;
+import Pegas.entity.FlightStatus;
 import Pegas.entity.Ticket;
 import Pegas.exception.DaoException;
 import Pegas.utils.ConnectionManager;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 
 public class TicketDao implements DAO<Ticket>{
     private static volatile TicketDao INSTANCE;
+    private static FlightDao flightDao = FlightDao.getINSTANCE();
     private TicketDao(){};
 
     private final static String save = """
@@ -22,7 +25,8 @@ public class TicketDao implements DAO<Ticket>{
             delete from test.ticket where id = ?;
             """;
     private final static String findAll = """
-            select * from test.ticket
+            select * from test.ticket t
+            join test.flight f on t.flight_id=f.id           
             """;
     private final static String findById = """
             select * from test.ticket t
@@ -49,7 +53,7 @@ public class TicketDao implements DAO<Ticket>{
              PreparedStatement statement = connection.prepareStatement(save, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, ticket.getPassengerNo());
             statement.setString(2, ticket.getPassengerName());
-            statement.setLong(3, ticket.getFlightId());
+            statement.setLong(3, ticket.getFlightId().getId());
             statement.setString(4, ticket.getSeatNo());
             statement.setBigDecimal(5, ticket.getCost());
             statement.executeUpdate();
@@ -146,9 +150,16 @@ public class TicketDao implements DAO<Ticket>{
     }
 
     private Ticket createTicket(ResultSet res) throws SQLException {
+        var flight = new Flight(res.getLong("id"),res.getString("flight_no"),
+                res.getTimestamp("departure_date").toLocalDateTime(),
+                res.getString("departure_airport_code"),
+                res.getTimestamp("arrival_date").toLocalDateTime(),
+                res.getString("arrival_airoport_code"),res.getInt("aircraft_id"),
+                FlightStatus.valueOf(res.getString("status")));
         return new Ticket(res.getLong("id"),res.getString("passenger_no"),
                 res.getString("passenger_name"),
-                res.getLong("flight_id"),res.getString("seat_no"),
+                flightDao.findById(res.getLong("flight_id")).orElse(null),
+                res.getString("seat_no"),
                 res.getBigDecimal("cost"));
     }
 }

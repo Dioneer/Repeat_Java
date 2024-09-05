@@ -1,20 +1,36 @@
 package Pegas.DAO;
 
+import Pegas.DTO.TickerFilter;
 import Pegas.entity.Ticket;
 import Pegas.exception.DaoException;
 import Pegas.utils.ConnectionManager;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class TicketDao {
-    private static volatile TicketDao INSTANCE = new TicketDao();
+public class TicketDao implements DAO<Ticket>{
+    private static volatile TicketDao INSTANCE;
     private TicketDao(){};
 
-    private final static String sql = """
+    private final static String save = """
             insert into test.ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values (?,?,?,?,?);
             """;
-    private final static String sql2 = """
+    private final static String del = """
             delete from test.ticket where id = ?;
+            """;
+    private final static String findAll = """
+            select * from test.ticket
+            """;
+    private final static String findById = """
+            select * from test.ticket t
+            where t.id = ?;
+            """;
+    private final static String update = """
+            update test.ticket t set passenger_name = ?
+            where t.id = ?;
             """;
 
     public static TicketDao getINSTANCE(){
@@ -30,7 +46,7 @@ public class TicketDao {
 
     public Ticket save(Ticket ticket) {
         try (Connection connection = ConnectionManager.get();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement(save, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, ticket.getPassengerNo());
             statement.setString(2, ticket.getPassengerName());
             statement.setLong(3, ticket.getFlightId());
@@ -49,11 +65,90 @@ public class TicketDao {
 
         public boolean delete(Long id){
             try(Connection connection = ConnectionManager.get();
-            PreparedStatement statement = connection.prepareStatement(sql2)){
+            PreparedStatement statement = connection.prepareStatement(del)){
             statement.setLong(1, id);
             return statement.executeUpdate()>0;
             }catch (SQLException | InterruptedException e) {
                 throw new DaoException(e);
             }
         }
+
+    public List<Ticket> findAll(){
+        try(Connection connection = ConnectionManager.get();
+            PreparedStatement statement = connection.prepareStatement(findAll)){
+            List<Ticket> arr = new ArrayList<>();
+            var res = statement.executeQuery();
+            while(res.next()){
+                arr.add(createTicket(res));
+            }
+            return arr;
+        }catch (SQLException | InterruptedException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public List<Ticket> findAll(TickerFilter filter){
+        List<Object> parameters = new ArrayList<>();
+        List<String> whereSql = new ArrayList<>();
+        if(filter.getPassengerName() != null){
+            parameters.add(filter.getPassengerName());
+            whereSql.add("passenger_name = ?");
+        }
+        if(filter.getSeatNo() != null){
+            parameters.add("%"+filter.getSeatNo()+"%");
+            whereSql.add("seat_no like ?");
+        }
+        parameters.add(filter.getLimit());
+        parameters.add(filter.getOffset());
+        String where = whereSql.stream().collect(Collectors.joining(" and ", " where ", " limit ? " +
+                "offset ?"));
+        String findFilter = findAll + where;
+        try(Connection connection = ConnectionManager.get();
+            PreparedStatement statement = connection.prepareStatement(findFilter)){
+            List<Ticket> arr = new ArrayList<>();
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i+1,parameters.get(i));
+            }
+            var res = statement.executeQuery();
+            while(res.next()){
+                arr.add(createTicket(res));
+            }
+            return arr;
+        }catch (SQLException | InterruptedException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public Optional<Ticket> findById(Long id){
+        try(Connection connection = ConnectionManager.get();
+            PreparedStatement statement = connection.prepareStatement(findById)){
+            Ticket ticket = null;
+            statement.setLong(1, id);
+            var res = statement.executeQuery();
+            while (res.next()){
+                ticket = createTicket(res);
+            }
+            return Optional.ofNullable(ticket);
+        }catch (SQLException | InterruptedException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public boolean update(Long id, String name){
+        try(Connection connection = ConnectionManager.get();
+            PreparedStatement statement = connection.prepareStatement(update)){
+            statement.setString(1, name);
+            statement.setLong(2, id);
+            return statement.executeUpdate()>0;
+        }catch (SQLException | InterruptedException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    private Ticket createTicket(ResultSet res) throws SQLException {
+        return new Ticket(res.getLong("id"),res.getString("passenger_no"),
+                res.getString("passenger_name"),
+                res.getLong("flight_id"),res.getString("seat_no"),
+                res.getBigDecimal("cost"));
+    }
 }

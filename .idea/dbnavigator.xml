@@ -125,6 +125,7 @@ country varchar(256) not null,
 city varchar(128) not null
 );
 insert into airport (code, country, city) values ('QWE', 'Russia','Moscow');
+insert into airport (code, country, city) values ('EE', 'Russia','Moscow');
 
 create table aicraft(
 id serial primary key,
@@ -132,7 +133,9 @@ model varchar(256) not null,
 image bytea
 );
 insert into aicraft (model) values ('Boing');
+insert into aicraft (model) values ('SJ');
 
+drop table flight;
 create table flight(
 id bigserial primary key,
 flight_no varchar(16) not null,
@@ -144,8 +147,23 @@ aircraft_id integer references aicraft(id),
 status varchar(32)
 );
 
+drop table status;
+create table status(
+id serial primary key,
+reason varchar(126) not null
+);
+
+insert into status (reason) values ('arrived'), ('cancelled'), ('departed');
+
 insert into flight (flight_no, departure_date, departure_airport_code,arrival_airoport_code,
- aircraft_id) values ('1a', now(), 'QWE', 'QWE', 1);
+ aircraft_id, status) values ('1a', now(), 'QWE', 'QWE', 1, 'canceled');
+ insert into flight (flight_no, departure_date, departure_airport_code,arrival_airoport_code,
+ aircraft_id, status) values ('2a', now(), 'EE', 'EE', 2, 'arrived');
+ 
+update flight set status = 'CANCELED' where id = 1;
+update flight set status = 'ARRIVED' where id = 2;
+update flight set arrival_date = now() where id = 2;
+update flight set arrival_date = now() where id = 1;
 
 drop table seat;
 
@@ -164,7 +182,8 @@ seat_no varchar(4),
 cost numeric(8,2)
 );
 
-insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values ('ads', 'asdasd',1, '1q',10.0);]]></console>
+insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values ('ads', 'asdasd',1, '1q',10.0);
+insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values ('ads', 'asdasd',2, '1q',10.0);]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -172,7 +191,8 @@ insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" object-ref="schemas/test/tables/ticket" />
+      <object connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" object-ref="schemas/test/tables/flight" />
+      <object connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" object-ref="consoles/Connection" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">

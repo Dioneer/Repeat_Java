@@ -36,7 +36,10 @@ public class TicketDao implements DAO<Ticket>{
             update test.ticket t set passenger_name = ?
             where t.id = ?;
             """;
-
+    private final static String findAllByFlightId = """
+            select * from test.ticket t
+            where t.flight_id = ?;
+            """;
     public static TicketDao getINSTANCE(){
         if (INSTANCE==null){
             synchronized (TicketDao.class){
@@ -149,13 +152,28 @@ public class TicketDao implements DAO<Ticket>{
         }
     }
 
+    public List<Ticket> findAllByFlightId(Long id){
+    try(Connection connectionManager = ConnectionManager.get();
+        var statement = connectionManager.prepareStatement(findAllByFlightId)){
+        List<Ticket>arr = new ArrayList<>();
+        statement.setLong(1, id);
+        var res = statement.executeQuery();
+        while (res.next()){
+            arr.add(createTicket(res));
+        }
+        return arr;
+    } catch (InterruptedException | SQLException e) {
+        throw new RuntimeException(e);
+        }
+    }
+
     private Ticket createTicket(ResultSet res) throws SQLException {
-        var flight = new Flight(res.getLong("id"),res.getString("flight_no"),
-                res.getTimestamp("departure_date").toLocalDateTime(),
-                res.getString("departure_airport_code"),
-                res.getTimestamp("arrival_date").toLocalDateTime(),
-                res.getString("arrival_airoport_code"),res.getInt("aircraft_id"),
-                FlightStatus.valueOf(res.getString("status")));
+//        var flight = new Flight(res.getLong("id"),res.getString("flight_no"),
+//                res.getTimestamp("departure_date").toLocalDateTime(),
+//                res.getString("departure_airport_code"),
+//                res.getTimestamp("arrival_date").toLocalDateTime(),
+//                res.getString("arrival_airoport_code"),res.getInt("aircraft_id"),
+//                FlightStatus.valueOf(res.getString("status")));
         return new Ticket(res.getLong("id"),res.getString("passenger_no"),
                 res.getString("passenger_name"),
                 flightDao.findById(res.getLong("flight_id")).orElse(null),

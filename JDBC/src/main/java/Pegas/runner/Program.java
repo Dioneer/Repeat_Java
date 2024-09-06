@@ -67,6 +67,7 @@ public class Program {
         /**
          * find by id
          */
-        System.out.println(flightDao.findById(1L));
+//        System.out.println(flightDao.findById(1L));
+        System.out.println(ticketDao.findAllByFlightId(1L));
     }
 }

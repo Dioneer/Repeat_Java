@@ -194,8 +194,6 @@ where t.flight_id = 1;]]></console>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" object-ref="schemas/test/tables/flight" />
-      <object connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" object-ref="schemas/test/tables/ticket" />
       <object connection-id="f9d730d3-453a-4241-80a2-d3aef01a1796" object-ref="consoles/Connection" />
     </open-files>
   </component>

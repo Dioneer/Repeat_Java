@@ -1,6 +1,7 @@
 package Pegas.servlet;
 
 import Pegas.service.TicketService;
+import Pegas.utils.JSPHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,14 +24,8 @@ public class TicketServlet extends HttpServlet {
             writer.write("<h1>List of Tickets for flights:</h1>");
             writer.write("<ul>");
             Long flightId = Long.valueOf(req.getParameter("flightId"));
-            System.out.println(flightId);
-            ticketService.findAll(flightId).forEach(i->writer.write("""
-                    <li>
-                    <p>%d - %d - -%s</p>
-                    </li>
-                    """.formatted(i.getId(),i.getFlightId(),i.getSeatNo())));
-            writer.write("</ul>");
-            writer.write("</body></html>");
+            req.setAttribute("tickets", ticketService.findAll(flightId));
+            req.getRequestDispatcher(JSPHelper.getPath("tickets")).forward(req, res);
         }
     }
 }

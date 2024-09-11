@@ -1,5 +1,6 @@
 package Pegas;
 
+import Pegas.servlet.ContentServlet;
 import Pegas.utils.ConnectionManager;
 
 import java.sql.Connection;

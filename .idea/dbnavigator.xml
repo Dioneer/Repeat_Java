@@ -186,7 +186,17 @@ insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values
 insert into ticket(passenger_no, passenger_name, flight_id, seat_no, cost)values ('ads', 'asdasd',2, '1q',10.0);
 
 select * from ticket t
-where t.flight_id = 1;]]></console>
+where t.flight_id = 1;
+
+create table users(
+id serial primary key,
+name varchar(124) not null,
+birthday date not null,
+email varchar(124) not null unique,
+password varchar(32) not null,
+role varchar(32) not null,
+gender varchar(32) not null
+);]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">

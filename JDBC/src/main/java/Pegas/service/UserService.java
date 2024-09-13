@@ -9,6 +9,8 @@ import Pegas.mapper.CreateUser;
 import Pegas.mapper.FindMapper;
 import Pegas.validator.CreateUserValidator;
 
+import java.util.Optional;
+
 public class UserService {
     private final UserDAO userDAO = UserDAO.getInstance();
     private final CreateUserValidator validator = CreateUserValidator.getInstance();
@@ -39,8 +41,8 @@ public class UserService {
         throw new ValidationException(validationResult.getErrors());
     }
 
-    public void login(String email, String password) {
-        UserDTO user = userDAO.findByEmailAndPass(email,password).map(findMapper::mapFrom).orElseThrow();
+    public Optional<UserDTO> login(String email, String password) {
+        return userDAO.findByEmailAndPass(email,password).map(findMapper::mapFrom);
     }
 }
 

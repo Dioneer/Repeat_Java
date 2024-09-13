@@ -1,7 +1,12 @@
 package Pegas.servlet;
 
 import Pegas.DTO.CreateUserDTO;
+import Pegas.entity.Gender;
+import Pegas.entity.Role;
+import Pegas.exception.ValidationException;
+import Pegas.service.UserService;
 import Pegas.utils.JSPHelper;
+import Pegas.validator.Error;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,10 +18,11 @@ import java.util.List;
 
 @WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
+    private final UserService userService = UserService.getInstance();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("roles", List.of("ADMIN","USER"));
-        req.setAttribute("genders", List.of("MALE","FEMALE"));
+        req.setAttribute("roles", Role.values());
+        req.setAttribute("genders", Gender.values());
         req.getRequestDispatcher(JSPHelper.getPath("registration")).forward(req,resp);
     }
 
@@ -30,5 +36,13 @@ public class RegistrationServlet extends HttpServlet {
                 .role(req.getParameter("role"))
                 .gender(req.getParameter("gender"))
                 .build();
+        try {
+            userService.create(userDTO);
+            resp.sendRedirect("/login");
+        }catch (ValidationException e){
+            req.setAttribute("errors", e.getErrors());
+            doGet(req, resp);
+        }
+
     }
 }

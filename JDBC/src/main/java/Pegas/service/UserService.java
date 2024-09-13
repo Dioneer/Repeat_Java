@@ -2,13 +2,17 @@ package Pegas.service;
 
 import Pegas.DAO.UserDAO;
 import Pegas.DTO.CreateUserDTO;
+import Pegas.DTO.UserDTO;
+import Pegas.entity.User;
 import Pegas.exception.ValidationException;
 import Pegas.mapper.CreateUser;
+import Pegas.mapper.FindMapper;
 import Pegas.validator.CreateUserValidator;
 
 public class UserService {
     private final UserDAO userDAO = UserDAO.getInstance();
     private final CreateUserValidator validator = CreateUserValidator.getInstance();
+    private final FindMapper findMapper = FindMapper.getInstance();
 
     private UserService() {
     }
@@ -33,6 +37,10 @@ public class UserService {
             return res.getId();
         }
         throw new ValidationException(validationResult.getErrors());
+    }
+
+    public void login(String email, String password) {
+        UserDTO user = userDAO.findByEmailAndPass(email,password).map(findMapper::mapFrom).orElseThrow();
     }
 }
 

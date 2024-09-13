@@ -1,16 +1,19 @@
 package Pegas.DAO;
 
+import Pegas.entity.Gender;
+import Pegas.entity.Role;
 import Pegas.entity.User;
 import Pegas.utils.ConnectionManager;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public class UserDAO implements DAO<User>{
     private static final String SAVE_SQL = "INSERT INTO users (name,birthday,email,password,role,gender) " +
             "values (?,?,?,?,?,?);";
-
+    private static final String GET_BY_EMAIL_PASS = "select * from users where email=? and password =?;";
 
     @Override
     public List<User> findAll() {
@@ -54,6 +57,36 @@ public class UserDAO implements DAO<User>{
     public boolean update(Long id, String name) {
         return false;
     }
+
+    public Optional<User> findByEmailAndPass(String email, String pass){
+        try(var connection = ConnectionManager.get();
+        var statement = connection.prepareStatement(GET_BY_EMAIL_PASS)){
+            statement.setString(1, email);
+            statement.setString(2, pass);
+
+            var result = statement.executeQuery();
+            User user = null;
+            while (result.next()){
+                user = buildEntity(result);
+            }
+            return Optional.ofNullable(user);
+        } catch (SQLException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private User buildEntity(ResultSet result) throws SQLException {
+            return User.builder()
+                    .id(result.getInt("id"))
+                    .name(result.getString("name"))
+                    .password(result.getString("password"))
+                    .birthday(result.getObject("birthday", LocalDate.class))
+                    .role(Role.valueOf(result.getString("role")))
+                    .gender(Gender.valueOf(result.getString("gender")))
+                    .email(result.getString("email"))
+                    .build();
+    }
+
     private UserDAO(){};
     private static volatile UserDAO INSTANCE;
     public static UserDAO getInstance(){

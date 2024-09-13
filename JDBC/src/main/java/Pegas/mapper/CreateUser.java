@@ -8,6 +8,7 @@ import Pegas.utils.LocalDateFormatter;
 
 public class CreateUser implements UserMapper<User, CreateUserDTO>{
     private static final CreateUser INSTANCE = new CreateUser();
+    private CreateUser(){}
     @Override
     public User mapFrom(CreateUserDTO from) {
         return User.builder()
